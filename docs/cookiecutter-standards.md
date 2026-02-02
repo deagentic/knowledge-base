@@ -37,6 +37,7 @@ The resulting structure MUST be preserved:
 - `features/`: BDD Feature files (`.feature`) and steps.
 - `notebooks/`: Experiments.
 - `pyproject.toml`: Dependency management.
+- `features/`: Expected behavior and feature files.
 - `tests/`: Unit tests.
 
 ###

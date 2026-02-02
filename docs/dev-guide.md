@@ -26,6 +26,8 @@ Feature: User Login
 
 *Why?* If an agent can't read this and understand what the system does, the code is already failed.
 
+**CRITICAL RULE**: Do NOT touch architecture or write implementation code until ALL behaviors (feature files) are written and approved. Design follows behavior.
+
 ### Step 2: Write the Test (The "Proof")
 
 Implement the test steps first. They should fail (Red).
@@ -35,17 +37,62 @@ Implement the test steps first. They should fail (Red).
 - We care *what* happens, not *how* it happens.
 - **Bad**: `assert logger.was_called_with("login_attempt")` (Testing implementation details)
 - **Good**: `assert response.status == 200` (Testing the result/interface)
+- **Better**: Validate schema with Pydantic:
+
+  ```python
+  # Ensure the response adheres to the contract, not just "is 200"
+  expected_schema = AuthResponse(token="ey...", user_id=123)
+  assert AuthResponse(**response.json()) == expected_schema
+  ```
+
 - **Why?** If we refactor the code but the result is the same, tests should pass.
+
+**Documentation Mandatory**:
+Every test must explicitly state:
+
+1. **HOW** it evaluates (e.g., "Checks HTTP 200 via `requests` and the response structure").
+2. **WHAT** is the expected behavior (e.g., "Returns JSON with auth token").
+3. **Why** this behavior matters.
 
 **File**: `features/steps/login_steps.py`
 
 ```python
-from behave import given, when, then
+from behave import then
+from backend.schemas import AuthResponse
+from pydantic import ValidationError
 
-@given('I am on the login page')
+@then('I should receive a valid auth token')
 def step_impl(context):
-    # Logic to test the login feature
-    pass
+    """Verifies the login response.
+
+    This step checks if the response status is 200 and validates the
+    JSON body against the `AuthResponse` Pydantic schema.
+
+    How:
+        Checks HTTP 200 via `context.response` and strict Pydantic validation.
+
+    What:
+        Expects a JSON payload containing a valid JWT `token` and `user_id`.
+
+    Why:
+        The frontend crashes if the token format is invalid or missing, blocking
+        user access.
+
+    Raises:
+        AssertionError: If status is not 200.
+        ValidationError: If the response body does not match the schema.
+    """
+    # 1. Check Interface (Status)
+    assert context.response.status_code == 200, \
+        f"Expected 200, got {context.response.status_code}"
+
+    # 2. Check Contract (Schema)
+    try:
+        # Strict validation: extra fields might be allowed or forbidden depending on config
+        data = AuthResponse(**context.response.json())
+        context.auth_token = data.token # Store for subsequent steps
+    except ValidationError as e:
+        assert False, f"Contract broken, invalid schema: {e}"
 ```
 
 ### Step 3: Write the Code (The "How")
@@ -108,3 +155,13 @@ To test *if the agent is smart*, we use **Evals** (not Unit Tests).
 - Create a dataset of inputs + expected outputs.
 - Run a separate script (not `pytest` CI) to grade the agent.
 - Use "LLM-as-a-Judge" to score the response.
+
+**Example**:
+
+```python
+# evaluations/grade_agent.py
+def grade_response(agent_output, expected_fact):
+    judge_prompt = f"Did the agent mention '{expected_fact}' in: {agent_output}?"
+    score = llm.ask(judge_prompt)
+    assert "YES" in score
+```
