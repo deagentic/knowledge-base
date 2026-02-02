@@ -44,7 +44,7 @@ from behave import given, when, then
 
 @given('I am on the login page')
 def step_impl(context):
-    # Logic to go to login page
+    # Logic to test the login feature
     pass
 ```
 
@@ -58,7 +58,7 @@ Now implement the logic to make the test pass (Green).
    - *Bad*: `def process(data):`
    - *Good*: `def process(data: UserSchema) -> AuthToken:`
 2. **Documentation**: Every function needs a docstring. Agents read these to know how to use your tools.
-   - *Format*: Google Style or simple summary.
+   - *Format*: Google Style.
    - *Content*: Explain `Args`, `Returns`, and `Raises`.
 
 ### Step 4: Git Hygiene
@@ -72,7 +72,39 @@ Once your tests pass:
 ## Quality Checklist
 
 - [ ] Does it have a `.feature` file?
+- [ ] Are the tests approved by other team member?
 - [ ] Do the tests pass?
 - [ ] Is it fully typed?
 - [ ] Is it documented for an Agent?
 - [ ] Did pre-commit pass?
+
+## 7. Testing AI Agents (LLMs)
+
+Testing deterministic code is easy. Testing probabilistic LLMs is hard. We split it into two:
+
+### A. The "Plumbing" (Unit Tests) - **REQUIRED**
+
+Test everything *around* the LLM. **Mock the LLM call.**
+
+- **Input**: specific prompt structure.
+- **Output**: JSON parsing, Pydantic validation.
+- **Tools**: Test your tools as standard functions.
+
+**Example**:
+
+```python
+# Don't call OpenAI. Mock the response.
+@patch("openai.ChatCompletion.create")
+def test_agent_parses_json(mock_llm):
+    mock_llm.return_value = '{"action": "search", "query": "hello"}'
+    result = agent.decide("hello")
+    assert result.action == "search"
+```
+
+### B. The "Intelligence" (Evals) - **SEPARATE**
+
+To test *if the agent is smart*, we use **Evals** (not Unit Tests).
+
+- Create a dataset of inputs + expected outputs.
+- Run a separate script (not `pytest` CI) to grade the agent.
+- Use "LLM-as-a-Judge" to score the response.
