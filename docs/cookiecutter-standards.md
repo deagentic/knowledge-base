@@ -34,6 +34,7 @@ The resulting structure MUST be preserved:
 - `src/`: Source code.
 - `conf/`: Configuration catalogs and parameters.
 - `data/`: Local data (ignored by git).
+- `features/`: BDD Feature files (`.feature`) and steps.
 - `notebooks/`: Experiments.
 - `pyproject.toml`: Dependency management.
 - `tests/`: Unit tests.

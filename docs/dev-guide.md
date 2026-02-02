@@ -42,3 +42,12 @@ We follow **Conventional Commits**. Your commit message should look like this:
 - Don't take it personally. We review code, not people.
 - If a reviewer asks for a change, reply with "Done" or explain why you disagree.
 - Resolve conversations when the issue is fixed.
+
+## 5. Testing & Quality (The Holy Grail)
+
+We don't ship broken code.
+
+- **BDD with Behave**: We use Behavior Driven Development. Write your features in Gherkin (`.feature` files) and implement steps in Python.
+- **Pre-commit**: We use `pre-commit` to catch simple issues before they even reach GitHub.
+  - Run `pre-commit install` once in every new repo.
+  - It will auto-fix imports and formatting when you `git commit`.
