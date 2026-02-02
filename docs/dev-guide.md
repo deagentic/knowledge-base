@@ -1,53 +1,78 @@
 # The Deagentic Way: A Developer's Guide
 
-Welcome to the team! This guide is your crash course on how we build software here. We focus on clean history, clear communication, and automated quality.
+Welcome to the team! We are an **Agentic-First** organization. This means we write code not just for computers to execute, but for AI Agents to read, understand, and interact with.
 
-## 1. Git 101: Atomic Commits
+## The Workflow: Think, Specify, Test, Code
 
-**Rule**: One commit = One change.
+We do not just "start coding". We follow a strict BDD (Behavior Driven Development) cycle at the development level.
 
-- **Bad**: "Fix login bug and update readme and change color of button"
-- **Good**:
-  - Commit 1: "fix: resolve null pointer in login"
-  - Commit 2: "docs: update install instructions"
-  - Commit 3: "style: change primary button color"
+### Step 1: Write the Feature (The "What")
 
-This makes it easy to revert specific changes if something breaks.
+Before writing a single line of Python, you must describe what you are building in plain English using Gherkin.
 
-## 2. How to Write a Commit
+**File**: `features/login.feature`
 
-We follow **Conventional Commits**. Your commit message should look like this:
+```gherkin
+Feature: User Login
+  As a registered user
+  I want to log in
+  So that I can access my dashboard
 
-`type: short description`
+  Scenario: Successful login
+    Given I am on the login page
+    When I enter valid credentials
+    Then I should be redirected to the dashboard
+```
 
-**Types:**
+*Why?* If an agent can't read this and understand what the system does, the code is already failed.
 
-- `feat`: A new feature (e.g., `feat: add dark mode`).
-- `fix`: A bug fix (e.g., `fix: mobile layout overflow`).
-- `docs`: Documentation only changes.
-- `style`: Formatting, missing semi-colons, etc (no code change).
-- `refactor`: A code change that neither fixes a bug nor adds a feature.
-- `test`: Adding missing tests or correcting existing tests.
-- `chore`: Changes to the build process or auxiliary tools.
+### Step 2: Write the Test (The "Proof")
 
-## 3. Pull Request (PR) Etiquette
+Implement the test steps first. They should fail (Red).
 
-- **Start as Draft**: If you are still working, mark your PR as a "Draft".
-- **Description is Mandatory**: use the template! Explain *what* you did and *why*.
-- **Self-Review**: Read your own code diff before asking others to.
-- **CI Checks**: Ensure all checks pass (green) before requesting review.
+**Philosophy: Test Results, Not Implementation**
 
-## 4. Code Review
+- We care *what* happens, not *how* it happens.
+- **Bad**: `assert logger.was_called_with("login_attempt")` (Testing implementation details)
+- **Good**: `assert response.status == 200` (Testing the result/interface)
+- **Why?** If we refactor the code but the result is the same, tests should pass.
 
-- Don't take it personally. We review code, not people.
-- If a reviewer asks for a change, reply with "Done" or explain why you disagree.
-- Resolve conversations when the issue is fixed.
+**File**: `features/steps/login_steps.py`
 
-## 5. Testing & Quality (The Holy Grail)
+```python
+from behave import given, when, then
 
-We don't ship broken code.
+@given('I am on the login page')
+def step_impl(context):
+    # Logic to go to login page
+    pass
+```
 
-- **BDD with Behave**: We use Behavior Driven Development. Write your features in Gherkin (`.feature` files) and implement steps in Python.
-- **Pre-commit**: We use `pre-commit` to catch simple issues before they even reach GitHub.
-  - Run `pre-commit install` once in every new repo.
-  - It will auto-fix imports and formatting when you `git commit`.
+### Step 3: Write the Code (The "How")
+
+Now implement the logic to make the test pass (Green).
+
+**Rules for Code:**
+
+1. **Strict Typing**: We are Pydantic. Use Type Hints everywhere. `MyPy` checks must pass.
+   - *Bad*: `def process(data):`
+   - *Good*: `def process(data: UserSchema) -> AuthToken:`
+2. **Documentation**: Every function needs a docstring. Agents read these to know how to use your tools.
+   - *Format*: Google Style or simple summary.
+   - *Content*: Explain `Args`, `Returns`, and `Raises`.
+
+### Step 4: Git Hygiene
+
+Once your tests pass:
+
+1. **Atomic Commits**: `feat: implement login service` (See Conventional Commits).
+2. **Pre-commit**: Run `pre-commit run --all-files` to auto-format (Ruff).
+3. **Pull Request**: Open a draft PR if big, or a normal PR if done.
+
+## Quality Checklist
+
+- [ ] Does it have a `.feature` file?
+- [ ] Do the tests pass?
+- [ ] Is it fully typed?
+- [ ] Is it documented for an Agent?
+- [ ] Did pre-commit pass?
