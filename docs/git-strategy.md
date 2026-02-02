@@ -4,19 +4,27 @@ This document outlines the standard Git workflow for the `deagentic` organizatio
 
 ## Branching Strategy
 
-We follow a simplified **GitHub Flow**:
+We follow a **Feature Branch Workflow** to ensure a linear and clean history.
 
-1. **`main` Branch**: The source of truth. Always deployable. Direct commits to `main` are discouraged; use Pull Requests.
-2. **Feature Branches**: Create a new branch for every feature or fix.
-   - Naming convention: `feature/your-feature-name` or `fix/issue-description`.
-   - Example: `feature/add-sync-skill`, `fix/update-readme`.
+1. **`main` Branch**: The source of truth. Always deployable. Protected.
+2. **Feature Branches**:
+   - Source: `main`
+   - Naming: `feat/description`, `fix/description`, `chore/description`.
+   - Lifecycle: Created for a task, merged via PR, **deleted immediately after merge**.
+
+## Static Analysis & Quality Gate
+
+Every repository MUST implement `pre-commit` hooks and CI checks using **Ruff**.
+
+- **Linter**: Ruff (replaces Flake8, Isort).
+- **Formatter**: Ruff (replaces Black).
+- **Type Checker**: MyPy.
 
 ## Pull Requests (PRs)
 
-- **Title**: Use semantic titles (e.g., "feat: add sync skill", "fix: resolve merge conflict").
-- **Description**: clearly describe *what* changed and *why*.
-- **Review**: specific PRs may require review from the user or other agents (if applicable).
-- **Merge**: Squash and merge is preferred to keep the history clean.
+- **Title**: MUST follow Conventional Commits (e.g., `feat: add user login`).
+- **Template**: Use the standard organization template.
+- **Merge Strategy**: **Squash and Merge** is preferred to maintain a clean history in `main`.
 
 ## .git Management
 
