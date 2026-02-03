@@ -22,6 +22,20 @@ We aim to use standard actions for:
 - **Bad Commit**: `fix bug`
 - **Good Commit**: `fix: handle null user id (ref #42)`
 
+### 🛡️ Automated Enforcement
+
+We provide a script to enforce this rule automatically.
+
+**Installation**:
+Copy the hook to your repository:
+
+```bash
+cp .github/hooks/commit-msg-issue-enforcer .git/hooks/commit-msg
+chmod +x .git/hooks/commit-msg
+```
+
+Now, `git commit` will reject any message without an issue ID (e.g., `#123`).
+
 ### 1. Issues (The Unit of Work)
 
 An **Issue** is a single, actionable task.
@@ -43,8 +57,32 @@ A **Milestone** is a specific destination (Release/Sprint).
 A **Feature** is a high-level capability provided to the user.
 
 - **Example**: "User Authentication", "Dark Mode".
-- **Is it a Milestone?** **NO**. A Feature is a goal. It might be delivered in Milestone `v1.0`.
-- If a Feature is huge, track it as a **GitHub Project** or an "Epic" Issue that links to smaller implementation Issues.
+- **Example**: "User Authentication", "Dark Mode".
+- **Tracking Features**: Use the **Epic Pattern**.
+  1. Create a "Tracking Issue" with the label `feature` or `epic`.
+  2. In the body, list the sub-tasks:
+
+     ```markdown
+     # Feature: User Authentication
+     - [x] Backend API (#102)
+     - [ ] Frontend Login Form (#103)
+     - [ ] Integration Tests (#104)
+     ```
+
+  3. Close the Tracking Issue only when all sub-tasks are done.
+
+### 4. Automation (CI/CD for State)
+
+We use GitHub's native **Keyword Automation** to link Code -> Issues.
+
+- **In your Pull Request (PR) Description**, you MUST include:
+  `Closes #123` or `Fixes #123`.
+
+**The Lifecycle:**
+
+1. **Open PR** with `Closes #123`.
+2. **Merge PR** -> GitHub **automatically closes** Issue #123.
+3. **Result**: Code is merged, Ticket is closed. Zero manual work.
 
 ### Templates & Organization
 
