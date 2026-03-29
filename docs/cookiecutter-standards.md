@@ -1,43 +1,44 @@
-# Project Creation Standards (Cookiecutters)
+# Project Creation Standards (Cornerstone CLI)
 
-To ensure consistency across our data science and engineering projects, we strictly enforce the use of standardized templates.
+To ensure consistency and enable the Agentic CI infrastructure across all projects, we strictly enforce the use of **Cornerstone CLI** for scaffolding new projects.
 
-## Data Science Projects
+## Starting a New Project
 
-We use **Kedro** as our standard framework for data science projects and pipelines.
+**Do not create folders manually and do not use generic tools like `cookiecutter` directly.** Use the official Cornerstone CLI.
 
-### Starting a New Project
-
-**Do not create folders manually.** Use the official Kedro starters.
-
+### 1. Installation
+Ensure you have the latest version of Cornerstone installed:
 ```bash
-# Standard interactive creation
-kedro new
-# (Select 'spaceflights' or another suitable starter)
+pip install git+https://github.com/deagentic/cornerstone
 ```
 
-### Configuration Standards
+### 2. Scaffolding with Cornerstone
+Use the `cornerstone new` command to scaffold a project using one of our standardized starters.
 
-When asked during setup:
+```bash
+# Example: Create a new full-stack project
+cornerstone new --starter full-stack
+```
 
-- **Project Name**: Use Title Case (e.g., `Customer Churn Model`).
-- **Repo Name**: Use kebab-case (e.g., `customer-churn-model`).
-- **Tools**:
-  - **Linting/Formatting**: Select `Ruff`.
-  - **Testing**: Select `Pytest`.
-  - **Config**: Select `YAML` (or `OmegaConf` if advanced features needed).
+Available starters (which automatically map to agent capabilities like `server`, `archaeology`, `frontend`):
+- `base`: Minimal project structure.
+- `mcp`: Standard MCP server project.
+- `api`: API project.
+- `full-stack`: Full-stack web application.
+- `pipeline`: Data science pipelines (Kedro).
+- `legacy-modernization`: Projects focused on archaeology and modernization.
+
+### 3. Agentic Initialization
+After creating the project, you must initialize the agentic runtime and sync the shared brain:
+
+```bash
+cd <your-new-project>
+cornerstone init --mode runtime
+cornerstone sync
+```
+
+## Data Science Projects (Kedro)
+For data science and data engineering projects, we continue to use **Kedro** under the hood, but the project must be generated via the Cornerstone `pipeline` starter to inherit the Agentic CI configurations.
 
 ### Directory Structure
-
-The resulting structure MUST be preserved:
-
-- `src/`: Source code.
-- `conf/`: Configuration catalogs and parameters.
-- `data/`: Local data (ignored by git).
-- `features/`: BDD Feature files (`.feature`) and steps.
-- `notebooks/`: Experiments.
-- `pyproject.toml`: Dependency management.
-- `features/`: Expected behavior and feature files.
-- `tests/`: Unit tests.
-
-###
+Regardless of the starter used, the generated structure MUST be preserved as it contains critical Agentic CI configurations (like `.agents/`, `AGENTS.md`, and `.github/workflows/ci.yml`). Do not manually alter the agent routing files unless directed by the framework.
