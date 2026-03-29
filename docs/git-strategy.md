@@ -32,3 +32,8 @@ Every repository MUST implement `pre-commit` hooks and CI checks using **Ruff**.
 - **Do not** initialize a git repo in the root `ACERO` folder. It is a container.
 - Each subfolder (`Skills`, `knowledge-base`, etc.) manages its own `.git` history.
 - Use the provided `sync_repos` scripts to update all of them at once.
+
+### Agentic Git Exclusions
+We do not use `git submodules` for agent tools or skills to avoid detached HEAD states and simplify sparse checkouts.
+- The `.agents/_repo` directory acts as a dynamic local cache built by `cornerstone sync`.
+- **CRITICAL:** The `.agents/_repo` directory must ALWAYS be added to the project's `.gitignore` and must never be tracked as a git submodule. Instead, tools and skills are pulled dynamically from the central `deagentic/cornerstone-agents` repository.

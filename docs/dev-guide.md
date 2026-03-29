@@ -165,3 +165,17 @@ def grade_response(agent_output, expected_fact):
     score = llm.ask(judge_prompt)
     assert "YES" in score
 ```
+
+## 8. The Learning Protocol & Agent Tools
+
+We do not hardcode every skill into every agent. We use **Composable Capabilities** (ADR-0029).
+
+### `cornerstone sync`
+Instead of storing all our prompt templates, Python scripts, and agent `.md` instruction files directly in each project repo or via `git submodules`, we pull them dynamically. Running `cornerstone sync` will clone a local, transient cache into `.agents/_repo/` and copy the necessary skills to the project's `.agents/skills/` directory.
+
+### The Learning Protocol (Upstream Knowledge Sharing)
+Every project acts as a node in the swarm:
+1. When an agent or developer learns a new framework or writes a generalizable agent tool/skill locally (using the `skill-creator`), it is written as a `SKILL.md` file.
+2. Instead of committing this to the current project, **the protocol mandates pushing this new skill to the shared repository: `deagentic/cornerstone-agents`**.
+3. All other projects automatically pull down that new learning during their next `cornerstone sync`.
+This continuous growth loop ensures every project contributes to the organization's "shared brain".
