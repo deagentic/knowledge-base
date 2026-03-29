@@ -26,6 +26,13 @@ Read the docs in this exact order to build full context before writing any code:
 4. **[github-management.md](docs/github-management.md)** — Understand how issues and milestones drive delivery.
 5. **[cookiecutter-standards.md](docs/cookiecutter-standards.md)** — Follow the standard project structure when scaffolding.
 
+### The Learning Protocol & Shared Brain
+
+We use a "Just-In-Time Instantiation" model for agent capabilities. 
+*   **Source of Truth:** All reusable agent skills and tools live in the [deagentic/cornerstone-agents](https://github.com/deagentic/cornerstone-agents) repository.
+*   **Local Usage:** Projects pull these skills dynamically using the `cornerstone sync` command, caching them in a local `.agents/_repo` directory.
+*   **Contributing (Learning Protocol):** When an agent or developer creates a new skill (e.g., via the `skill-creator`), it must be pushed upstream to the `cornerstone-agents` repository so the entire organization can inherit the capability.
+
 After reading all five, you have the full operating context for the organization.
 
 ---
